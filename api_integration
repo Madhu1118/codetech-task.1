@@ -1,0 +1,80 @@
+# Import necessary libraries
+import requests
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import streamlit as st
+
+# Constants
+API_KEY = "f08d86271d2279039bdc4e7da96a5a42"  # Replace with your OpenWeatherMap API key
+CITY = "Khammam"  # Replace with your desired city
+URL = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}"
+
+# Fetch weather data
+def fetch_weather_data(city):
+    response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}")
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error: Unable to fetch data (Status Code: {response.status_code})")
+        return None
+
+# Process the data
+def process_data(data):
+    weather_data = {
+        "City": CITY,
+        "Temperature (°C)": data["main"]["temp"] - 273.15,  # Convert from Kelvin to Celsius
+        "Feels Like (°C)": data["main"]["feels_like"] - 273.15,
+        "Humidity (%)": data["main"]["humidity"],
+        "Pressure (hPa)": data["main"]["pressure"],
+        "Weather Description": data["weather"][0]["description"],
+        "Wind Speed (m/s)": data["wind"]["speed"]
+    }
+    return pd.DataFrame([weather_data])
+
+# Visualization with Matplotlib and Seaborn
+#def create_visualizations(df):
+    # Bar plot for weather parameters
+ #   plt.figure(figsize=(10, 6))
+  #  sns.barplot(x=["Temperature (°C)", "Feels Like (°C)", "Humidity (%)", "Pressure (hPa)", "Wind Speed (m/s)"],
+   #             y=df.iloc[0, 1:6].values)
+    #plt.title(f"Weather Data for {df.iloc[0]['City']}")
+    #plt.ylabel("Values")
+    #plt.show()
+    # Visualization with Matplotlib and Seaborn
+def create_visualizations(df):
+    # Select only numeric columns for visualization
+    numeric_columns = ["Temperature (°C)", "Feels Like (°C)", "Humidity (%)", "Pressure (hPa)", "Wind Speed (m/s)"]
+    numeric_values = df[numeric_columns].iloc[0].values
+
+    # Bar plot for weather parameters
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x=numeric_columns, y=numeric_values)
+    plt.title(f"Weather Data for {df.iloc[0]['City']}")
+    plt.ylabel("Values")
+    plt.xticks(rotation=45)
+    plt.show()
+    
+    
+
+# Streamlit Dashboard
+def create_dashboard(df):
+    st.title(f"Weather Data for {df.iloc[0]['City']}")
+    st.write(f"### Weather Description: {df.iloc[0]['Weather Description']}")
+    st.write("#### Detailed Weather Data")
+    st.dataframe(df)
+    st.bar_chart(df.iloc[0, 1:6])
+
+# Main Function
+if __name__ == "__main__":
+    # Fetch and process data
+    data = fetch_weather_data(CITY)
+    if data:
+        weather_df = process_data(data)
+        
+        # Create visualizations
+        create_visualizations(weather_df)
+        
+        # Uncomment the following lines to enable the Streamlit dashboard
+        # Run the Streamlit dashboard using: streamlit run script_name.py
+       # create_dashboard(weather_df)
