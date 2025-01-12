@@ -71,10 +71,4 @@ Temperature variations over time
 
 Humidity and wind speed comparisons across different locations
 
-Data patterns that help in forecasting weather-related decisions
-
-
-
----
-
-This review provides a structured overview of the project, its objectives, technologies used, and instructions for running the project. It will be helpful to anyone browsing the repository for understanding the purpose and scope of the project.
+Data patterns that help in forecasting weather-related decisions.
